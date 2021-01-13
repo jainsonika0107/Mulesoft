@@ -1,0 +1,35 @@
+                                            {
+    "customer" :
+        {
+            "name" : "Sonika",
+            "address" : "12213 summertree de,feico,Tx-75035",
+            "phone" : 2108587898
+        }
+        
+    ,
+    "orders" : 
+        [
+            {
+                "itemId" : 123,
+                "itemName" : "dress",
+                "itemPrice" : 100
+            },
+            {
+                "itemId" : 456,
+                "itemName" : "Skirt",
+                "itemPrice" : 200
+            },   
+            {
+                "itemId" : 789,
+                "itemName" : "pants",
+                "itemPrice" : 300
+            }
+        ]   
+}
+            
+     
+
+
+
+
+

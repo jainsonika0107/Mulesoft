@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="customerDetails" format="json">
+      <types:shape format="weave" example="examples/input-1.json"><![CDATA[%dw 2.0
+
+type customerDetails = {|
+  customer: {|
+    name: String, 
+    address: String, 
+    phone: Number {"typeId": "int"}
+  |}, 
+  orders: Array<{|    itemId: Number {"typeId": "int"},     itemName: String,     itemPrice: Number {"typeId": "int"}  |}>
+|} {"example": "{\\\"customer\\\":{\\\"name\\\":\\\"Sonika Jain\\\",\\\"address\\\":\\\"12213 summertree dr,frisco,TX 75035\\\",\\\"phone\\\":2108587898},\\\"orders\\\":[{\\\"itemId\\\":123,\\\"itemName\\\":\\\"dress\\\",\\\"itemPrice\\\":100},{\\\"itemId\\\":456,\\\"itemName\\\":\\\"Skirt\\\",\\\"itemPrice\\\":200},{\\\"itemId\\\":789,\\\"itemName\\\":\\\"pants\\\",\\\"itemPrice\\\":300}]}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="customer" format="json">
+      <types:shape format="weave" example="examples/output.json"><![CDATA[%dw 2.0
+
+type customer = {|
+  fname: String, 
+  lname: String, 
+  age: String, 
+  work: String, 
+  address: String, 
+  zip: String
+|} {"example": "{\\\"fname\\\":\\\"Neeraj\\\",\\\"lname\\\":\\\"Jain\\\",\\\"age\\\":\\\"12\\\",\\\"work\\\":\\\"mulesofr Trainee\\\",\\\"address\\\":\\\"12213\\\",\\\"zip\\\":\\\"75035\\\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="id" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: integer]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#55d05455-d3b7-42aa-9c39-0ed59877e284">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="customerDetails"/>
+          <types:attributes type="customerDetails"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="id" type="id"/>
+        </types:variables>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="customer"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

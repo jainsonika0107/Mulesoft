@@ -1,0 +1,44 @@
+                                            {
+    "customer" :
+        {
+            "name" : "Sonika Jain",
+            "address" : "12213 summertree dr,frisco,TX 75035",
+            "phone" : "2108587898",
+            "iD" : "1",
+            "abc" : "5",
+            "date" : "2020-11-04T12:12:12Z"
+
+        }
+        
+    ,
+    "orders" : 
+        [
+            {
+                "itemId" : 123,
+                "itemName" : "Dress",
+                "itemPrice" : 100
+            },
+            {
+                "itemId" : 456,
+                "itemName" : "Dress",
+                "itemPrice" : 200
+            },   
+            {
+                "itemId" : 789,
+                "itemName" : "Pants",
+                "itemPrice" : 300
+            },
+            {
+                "itemId" : 888,
+                "itemName" : "Pants",
+                "itemPrice" : 200
+            }
+        ]   
+}
+            
+     
+
+
+
+
+

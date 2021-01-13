@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="8a80f4fb-3bd2-4285-b6f4-128edb68ce89" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="session12Flow" doc:id="1213543c-384f-4dbd-820f-920872542f45" >
+		<http:listener doc:name="Listener" doc:id="7af0bc19-3691-46df-8d61-25764023eb9c" config-ref="HTTP_Listener_config" path="/api/session12"/>
+		<logger level="INFO" doc:name="Logger" doc:id="a46d91f9-a396-414b-9b73-d94bdc5780ad" />
+		<choice doc:name="Choice" doc:id="819052cf-22ef-438f-86a4-43eb8ddd391e">
+			<when expression="#[sizeOf(payload.orders)&gt;0]">
+				<file:write doc:name="Write" doc:id="032a0c0a-23bd-487b-9848-23dbb6973182" path="D:\studio-workspace\temp\orders.json">
+					<file:content><![CDATA[#[payload.orders]]]></file:content>
+				</file:write>
+			</when>
+			<otherwise>
+				<file:write doc:name="Write" doc:id="7f6be791-730c-41c9-a6c6-5158ee5cccb6" path="D:\studio-workspace\temp\customer.json">
+					<file:content><![CDATA[#[payload.customer]]]></file:content>
+				</file:write>
+			</otherwise>
+		</choice>
+		<flow-ref doc:name="Flow Reference" doc:id="e27a1368-0e81-49fb-97ef-ff47758b8e24" name="session12Sub_Flow"/>
+	</flow>
+	<sub-flow name="session12Sub_Flow" doc:id="7640425a-0ecf-47e1-aea9-a7007e4eb515" >
+		<scatter-gather doc:name="Scatter-Gather" doc:id="149eefe5-ec7e-4ee1-8f68-adc828ff908a" >
+			<route >
+				<file:write doc:name="Write" doc:id="e19174ce-19e9-4052-89ce-c7551b5f9949" path="D:\studio-workspace\temp\customer.json">
+					<file:content ><![CDATA[#[payload.customer]]]></file:content>
+				</file:write>
+			</route>
+			<route >
+				<foreach doc:name="For Each" doc:id="d5dfaaef-886b-4716-b324-ae65352a7bbe" collection="payload.orders">
+					<file:write doc:name="Write" doc:id="d474cfd5-3ac9-4605-928e-63a02065c074" path="#['D:/studio-workspace/temp/' ++ payload.itemId ++ '.json']">
+					</file:write>
+				</foreach>
+			</route>
+		</scatter-gather>
+	</sub-flow>
+	<sub-flow name="session12Sub_Flow1" doc:id="3c9f2163-5ada-4f6a-96c0-308dad355f15" >
+		<logger level="INFO" doc:name="Logger" doc:id="e25ea826-857f-4e48-8164-a6a14c7f33f5" />
+		<ee:transform doc:name="Transform Message" doc:id="55d05455-d3b7-42aa-9c39-0ed59877e284" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+
+
+payload.orders[1] mapObject  {
+	($$): $ ++ $$$
+}
+
+
+//payload.orders map(v,i) -> {
+//	id: v.itemId as String ++ i,
+//	name: ((v.itemName replace "s" with "d") replace /Sk[a-z]*/ with "minis"),
+	
+//	counter: i
+//}
+
+	
+
+
+//{
+//	fname: payload.customer.name ++ ' ' ++ payload.customer.address ++" " ++ "aaa",
+//	lname: payload.customer.name[0 to 11] default "aaa",
+//	xvt: if(payload.customer.iD > 0) payload.customer.iD else "false",
+//	yyy: payload.customer.address as Number default "12213",
+//	
+//	xxx: sizeOf(payload.customer.address),
+//	
+//	dd: payload.customer.date as DateTime {format: "yyyy-MM-dd'T'HH:mm:ssz"} as 
+//			String{format: "dd-MM-yyyy HH:mm"},
+//	
+//}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="07a1412a-2de5-40d4-a994-ad42653b519e" />
+	</sub-flow>
+</mule>
