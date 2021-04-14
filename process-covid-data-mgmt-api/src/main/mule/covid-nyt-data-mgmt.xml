@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:batch="http://www.mulesoft.org/schema/mule/batch"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:request-config name="HTTP_Request_Persist_configuration" doc:name="HTTP Request configuration" doc:id="8b46b552-406c-497b-82af-8592315510f4" basePath="/api" >
+		<http:request-connection host="localhost" port="8083" />
+	</http:request-config>
+	<flow name="covid-nyt-data-mgmtFlow" doc:id="d8a138ab-6127-4d4a-8400-1d8b7e2ddc78" >
+		<batch:job jobName="covid-nyt-data-mgmtBatch_Job" doc:id="853700e5-ca7d-431e-99f7-f9fb4de5e382" >
+			<batch:process-records >
+				<batch:step name="Batch_Step" doc:id="b0d2dd71-9367-42cf-919a-c6842798cc1c" >
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="c20d9888-ecd9-44d6-ada4-4ee19ab8f13a" size="100">
+						<ee:transform doc:name="Transform Message" doc:id="8602e7a6-0e57-4073-a7c2-0e3a7a4a05f0" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+						<ee:transform doc:name="Transform Message" doc:id="471e38bd-7fc5-4931-948e-f47a8ec25aea" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+						<http:request method="GET" doc:name="Request" doc:id="58adb0b2-ea7a-46f9-b1cd-4f2cdd226046" config-ref="HTTP_Request_Persist_configuration" path="/covid19/data/nytimes"/>
+					</batch:aggregator>
+				</batch:step>
+			</batch:process-records>
+		</batch:job>
+	</flow>
+</mule>
