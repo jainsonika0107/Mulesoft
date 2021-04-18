@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="load-global-covid-datafile-api-suite.xml" />
+	<munit:test name="get:\covid19\data\ecdc:load-global-covid-datafile-api-config-test" doc:id="b3aced23-9d14-45a8-a5d3-80edbad3b531" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Request" doc:id="79e7dbd3-6977-4081-9f8f-adfdb8801b8c" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="739ec6aa-f4da-49ae-8bf2-b8acbfc5c6f1" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/csv --- readUrl('classpath://getcovid19dataecdcloadglobalcoviddatafileapiconfigtest\mock_payload1.dwl')]" mediaType="application/csv" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="cb3db214-4c57-411a-aadb-0afdaf099b82" >
+				<munit:payload value="#[readUrl('classpath://getcovid19dataecdcloadglobalcoviddatafileapiconfigtest\set-event_payload1.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://getcovid19dataecdcloadglobalcoviddatafileapiconfigtest\set-event_attributes1.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://getcovid19dataecdcloadglobalcoviddatafileapiconfigtest\set-event_variable_1.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\covid19\data\ecdc:load-global-covid-datafile-api-config" doc:id="c7f93f04-e713-48b5-aac7-8108f82396b0" name="get:\covid19\data\ecdc:load-global-covid-datafile-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify Logger" doc:id="cbe2732b-8eb9-4ce5-b4d0-d77bd665dddf" processor="logger" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="19734305-435c-48bc-afd7-84346af0c395" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Logger" doc:id="aceeac97-61d5-475b-b59b-0a1a431e3f26" processor="logger" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="3ed2a70d-a307-460c-af95-095a88960441" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Compress" doc:id="339d0a71-8e6c-4374-b228-99951215c4d4" processor="compression:compress" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="b26b53bb-9993-4da3-999b-128b9935870d" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:assert doc:name="Assert Payload" doc:id="559815de-c00a-4fb6-bed2-b17f8222cd02" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="load-global-covid-datafile-api-main-test" doc:id="ac4ab3c0-0fd3-4506-9bfc-486a15fbbdb0" >
+		<munit:behavior >
+			<munit:set-event doc:name="Set Input" doc:id="d508533b-a259-4ac4-a7bf-f57403681394" >
+				<munit:payload value="#[readUrl('classpath://loadglobalcoviddatafileapimaintest\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://loadglobalcoviddatafileapimaintest\set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to load-global-covid-datafile-api-main" doc:id="de383471-e2df-4562-a140-9ed9894d1151" name="load-global-covid-datafile-api-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify APIkit Router" doc:id="6ef3fdcc-3896-4a21-8906-1b633e63c69e" processor="apikit:router" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="95ec1661-eba9-4313-aa84-c5bb94053a7f" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

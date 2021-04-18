@@ -1,0 +1,22 @@
+ecdc-sys-api:
+  host: "sys-load-global-covid-datafile-api.us-e2.cloudhub.io"
+  port: "80"
+  path: "covid19/data/ecdc"
+  client_id: "![IATGmCp9DaZM79jsPjJyZDS1wLfz3Vgsp07s7NBikllAYizszeanhA==]"
+  client_secret: "![WboJOFrPnrt+NkhAIaNdRibwPI9lrYiTDctKQh0xNu9AYizszeanhA==]"
+nyt-sys-api:
+  host: "sys-load-us-covid-datafile-api.us-e2.cloudhub.io"
+  port: "80"
+  path: "covid19/data/nytimes"
+  client_id: "![IATGmCp9DaZM79jsPjJyZDS1wLfz3Vgsp07s7NBikllAYizszeanhA==]"
+  client_secret: "![WboJOFrPnrt+NkhAIaNdRibwPI9lrYiTDctKQh0xNu9AYizszeanhA==]"
+persist-sys-api:
+  host: "sys-covid-data-persist-api.us-e2.cloudhub.io"
+  port: "80"
+  ecdc-path: "covid19/data/ecdc"
+  nyt-path: "covid19/data/nytimes"
+  stats-path: "covid19/data/stats" 
+  client_id: "![IATGmCp9DaZM79jsPjJyZDS1wLfz3Vgsp07s7NBikllAYizszeanhA==]"
+  client_secret: "![WboJOFrPnrt+NkhAIaNdRibwPI9lrYiTDctKQh0xNu9AYizszeanhA==]"
+api:
+  id: "16790052"

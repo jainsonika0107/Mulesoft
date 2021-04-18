@@ -1,0 +1,6 @@
+ecdc:
+  host: "opendata.ecdc.europa.eu"
+  port: "443"
+  path: "covid19/casedistribution/csv/data.csv"
+api:
+  id: "16789546"

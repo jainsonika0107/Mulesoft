@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="covid-data-persist-api-suite.xml" />
+	<munit:test name="post:\covid19\data\ecdc:application\json:covid-data-persist-api-config-test" doc:id="c4b9f6c2-a5a0-4f71-b158-6e694f627487" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Bulk Insert ECDC" doc:id="b2a647df-0db8-4d3a-a113-cf480fb3debf" processor="db:bulk-insert">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="a4b544dc-4c82-4ea9-bd32-d14286ef2eda" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java --- readUrl('classpath://postcovid19dataecdcapplicationjsoncoviddatapersistapiconfigtest\mock_payload.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://postcovid19dataecdcapplicationjsoncoviddatapersistapiconfigtest\mock_variable_.dwl')]" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy Transform Message" doc:id="557d4feb-42f8-45f0-b7ec-bb7f538c4db7" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="f756bb03-4612-4b72-927f-7e05e3135b79" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="a3f4da04-2cc4-4294-b8bf-5ec9b1bc09d9" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import postcovid19dataecdcapplicationjsoncoviddatapersistapiconfigtest::spy_assert_payload
+---
+spy_assert_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="916f1911-f448-4728-936d-b1e19b065ebd" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import postcovid19dataecdcapplicationjsoncoviddatapersistapiconfigtest::spy_assert_payload1
+---
+spy_assert_payload1::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+			<munit:set-event doc:name="Set Input" doc:id="943c6f07-7b96-4f2c-a814-ee69c354c03b" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://postcovid19dataecdcapplicationjsoncoviddatapersistapiconfigtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://postcovid19dataecdcapplicationjsoncoviddatapersistapiconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://postcovid19dataecdcapplicationjsoncoviddatapersistapiconfigtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\covid19\data\ecdc:application\json:covid-data-persist-api-config" doc:id="70fd2e24-d171-4b5a-850a-3853e4117ed0" name="post:\covid19\data\ecdc:application\json:covid-data-persist-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="03bfcd57-fda3-46a1-a8b7-2e8f32228c86" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import postcovid19dataecdcapplicationjsoncoviddatapersistapiconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify Logger" doc:id="018de6ca-4f70-4a29-a79d-d7c9acff3ee0" processor="logger" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="c9ad48b5-7a3a-49c1-a412-11ad081bee22" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Logger" doc:id="ed5f49bd-0608-4519-9b11-0b0741aad625" processor="logger" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="4f147aa0-9125-472a-a539-121c0e78bfe3" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Transform Message" doc:id="7ed978d9-f691-46ad-9a28-1150e6a8f79a" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="f756bb03-4612-4b72-927f-7e05e3135b79" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="post:\covid19\data\nytimes:application\json:covid-data-persist-api-config-test" doc:id="ff1afcc3-f90c-47ab-b87b-2feca7a94b6f" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Bulk Insert NYTimes" doc:id="02b882b6-5508-4105-8218-aa03c2951df0" processor="db:bulk-insert">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="d7fd82aa-a666-4b6f-9203-9e3da044eee2" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java --- readUrl('classpath://postcovid19datanytimesapplicationjsoncoviddatapersistapiconfigtest\mock_payload.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://postcovid19datanytimesapplicationjsoncoviddatapersistapiconfigtest\mock_variable_.dwl')]" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy Transform Message" doc:id="4f974f7b-589e-4bf8-ad10-b9c923cd5e9a" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="7e901c4f-29be-4d65-9625-72ab4cb8a092" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="800e8bfc-3e66-41ac-b736-1a51e40d284a" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import postcovid19datanytimesapplicationjsoncoviddatapersistapiconfigtest::spy_assert_payload
+---
+spy_assert_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="d3df7a27-a48a-4b2e-b774-9c5d8aaf970a" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import postcovid19datanytimesapplicationjsoncoviddatapersistapiconfigtest::spy_assert_payload1
+---
+spy_assert_payload1::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+			<munit:set-event doc:name="Set Input" doc:id="adcecf58-4291-453d-ae21-92e1b1ed0bb9" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://postcovid19datanytimesapplicationjsoncoviddatapersistapiconfigtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:attributes value="#[readUrl('classpath://postcovid19datanytimesapplicationjsoncoviddatapersistapiconfigtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://postcovid19datanytimesapplicationjsoncoviddatapersistapiconfigtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\covid19\data\nytimes:application\json:covid-data-persist-api-config" doc:id="0ea46ba4-cde7-44f1-ba52-9f742b396017" name="post:\covid19\data\nytimes:application\json:covid-data-persist-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="6dae878c-1ca6-459b-8ac1-a2aa16228d32" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import postcovid19datanytimesapplicationjsoncoviddatapersistapiconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify Logger" doc:id="e0b4481d-c190-4432-94ab-eef5bba3c68d" processor="logger" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="b578977a-04e0-4db7-806c-7b18d537db52" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Logger" doc:id="a3ec20d5-bbf2-4aaf-b882-31fc4662bfae" processor="logger" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="dd882fb3-b31b-4491-ac85-9c77825da412" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Transform Message" doc:id="60abda58-0420-4124-a2b0-6a36c5028abb" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="7e901c4f-29be-4d65-9625-72ab4cb8a092" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="post:\covid19\data\stats:application\json:covid-data-persist-api-config-test" doc:id="fee40494-f3e2-4347-87b8-2d526a674d33" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Insert" doc:id="be7087f2-6e49-49ab-b3ae-0fdca8739520" processor="db:insert">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="01ce4e6d-555c-4758-819f-48f7e9980218" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java --- readUrl('classpath://postcovid19datastatsapplicationjsoncoviddatapersistapiconfigtest\mock_payload.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://postcovid19datastatsapplicationjsoncoviddatapersistapiconfigtest\mock_variable_.dwl')]" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy Transform Message" doc:id="aa9c98db-b678-40ef-849d-94402c9716e1" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="a1b56795-b56b-4ef5-a767-31fe5b6ce2b3" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="fdaafc29-cae4-4c72-b305-0374b8c2ea67" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import postcovid19datastatsapplicationjsoncoviddatapersistapiconfigtest::spy_assert_payload
+---
+spy_assert_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="eb19e998-6985-4306-89bf-8eae0938149c" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import postcovid19datastatsapplicationjsoncoviddatapersistapiconfigtest::spy_assert_payload1
+---
+spy_assert_payload1::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+			<munit:set-event doc:name="Set Input" doc:id="56b8e56e-f225-4097-b139-c18d8ae68e1f" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://postcovid19datastatsapplicationjsoncoviddatapersistapiconfigtest\set-event_payload.dwl')]" encoding="UTF-8" mediaType="application/json" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://postcovid19datastatsapplicationjsoncoviddatapersistapiconfigtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\covid19\data\stats:application\json:covid-data-persist-api-config" doc:id="a7c2ae77-e199-4486-a285-1210dc9bfc93" name="post:\covid19\data\stats:application\json:covid-data-persist-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="11f0863b-84c2-427c-b12e-4dc39e3bbf38" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import postcovid19datastatsapplicationjsoncoviddatapersistapiconfigtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify Logger" doc:id="8f559faf-f1a0-4042-9718-3ee0c15dbe2c" processor="logger" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="6b522d7c-7d2b-4eb3-8f55-816b1e5c2c40" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Logger" doc:id="8a63a457-ea3a-4369-b382-1d3c27791388" processor="logger" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="a2069cd6-440d-4e27-a8e9-34d6f1bf93d5" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Transform Message" doc:id="a12690e8-62b2-4ed7-8368-ee8a742d1112" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="a1b56795-b56b-4ef5-a767-31fe5b6ce2b3" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="covid-data-persist-api-main-test" doc:id="114eacf8-5a4f-4a69-9080-b80d0868dd2b" >
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to covid-data-persist-api-main" doc:id="d5b3a0c3-d614-42a0-b72f-5642fc53a3bb" name="covid-data-persist-api-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="153bec16-a1e6-4092-a1fb-ff993424baaa" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import coviddatapersistapimaintest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify APIkit Router" doc:id="87cb4cf9-2d87-4922-854b-be4a3a9fb820" processor="apikit:router" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="0c330785-0194-4b0c-b608-4d61dc4120f4" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

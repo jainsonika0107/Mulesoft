@@ -1,0 +1,72 @@
+[
+  {
+    "dateRep": "14/12/2020",
+    "day": "14",
+    "month": "12",
+    "year": "2020",
+    "cases": "746",
+    "deaths": "6",
+    "countriesAndTerritories": "Afghanistan",
+    "geoId": "AF",
+    "countryterritoryCode": "AFG",
+    "popData2019": "38041757",
+    "continentExp": "Asia",
+    "Cumulative_number_for_14_days_of_COVID-19_cases_per_100000": "9.01377925"
+  },
+  {
+    "dateRep": "13/12/2020",
+    "day": "13",
+    "month": "12",
+    "year": "2020",
+    "cases": "298",
+    "deaths": "9",
+    "countriesAndTerritories": "Afghanistan",
+    "geoId": "AF",
+    "countryterritoryCode": "AFG",
+    "popData2019": "38041757",
+    "continentExp": "Asia",
+    "Cumulative_number_for_14_days_of_COVID-19_cases_per_100000": "7.05277624"
+  },
+  {
+    "dateRep": "12/12/2020",
+    "day": "12",
+    "month": "12",
+    "year": "2020",
+    "cases": "113",
+    "deaths": "11",
+    "countriesAndTerritories": "Afghanistan",
+    "geoId": "AF",
+    "countryterritoryCode": "AFG",
+    "popData2019": "38041757",
+    "continentExp": "Asia",
+    "Cumulative_number_for_14_days_of_COVID-19_cases_per_100000": "6.86876792"
+  },
+  {
+    "dateRep": "11/12/2020",
+    "day": "11",
+    "month": "12",
+    "year": "2020",
+    "cases": "63",
+    "deaths": "10",
+    "countriesAndTerritories": "Afghanistan",
+    "geoId": "AF",
+    "countryterritoryCode": "AFG",
+    "popData2019": "38041757",
+    "continentExp": "Asia",
+    "Cumulative_number_for_14_days_of_COVID-19_cases_per_100000": "7.13426564"
+  },
+  {
+    "dateRep": "10/12/2020",
+    "day": "10",
+    "month": "12",
+    "year": "2020",
+    "cases": "202",
+    "deaths": "16",
+    "countriesAndTerritories": "Afghanistan",
+    "geoId": "AF",
+    "countryterritoryCode": "AFG",
+    "popData2019": "38041757",
+    "continentExp": "Asia",
+    "Cumulative_number_for_14_days_of_COVID-19_cases_per_100000": "6.96865815"
+  }
+]

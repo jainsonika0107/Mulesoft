@@ -1,0 +1,6 @@
+nyt:
+  host: "raw.githubusercontent.com"
+  port: "443"
+  path: "nytimes/covid-19-data/master/us-counties.csv"
+api:
+  id: "16789614"

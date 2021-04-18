@@ -15,7 +15,8 @@
 
 		<app.runtime>4.3.0-20210119</app.runtime>
 		<mule.maven.plugin.version>3.4.2</mule.maven.plugin.version>
-	</properties>
+	<munit.version>2.3.2</munit.version>
+    </properties>
 
 	<build>
 		<plugins>
@@ -32,7 +33,25 @@
 				<configuration>
 				</configuration>
 			</plugin>
-		</plugins>
+		<plugin>
+                <groupId>com.mulesoft.munit.tools</groupId>
+                <artifactId>munit-maven-plugin</artifactId>
+                <version>${munit.version}</version>
+                <configuration>
+                    <coverage>
+                        <runCoverage>true</runCoverage>
+                        <formats>
+                            <format>html</format>
+                        </formats>
+                    </coverage>
+                </configuration>
+            </plugin>
+            <plugin>
+      <groupId>com.mulesoft.munit.tools</groupId>
+      <artifactId>munit-maven-plugin</artifactId>
+      <version>${munit.version}</version>
+    </plugin>
+        </plugins>
 	</build>
 
 	<dependencies>
@@ -48,13 +67,6 @@
             <version>1.2.0</version>
             <classifier>mule-plugin</classifier>
         </dependency>
-		<dependency>
-            <groupId>9ac3c8fa-838f-4e07-b1cd-59e1971c7a08</groupId>
-            <artifactId>load-global-covid-datafile-api</artifactId>
-            <version>1.0.0</version>
-            <classifier>raml</classifier>
-            <type>zip</type>
-        </dependency>
     	<dependency>
             <groupId>org.mule.modules</groupId>
             <artifactId>mule-apikit-module</artifactId>
@@ -66,6 +78,26 @@
             <artifactId>mule-compression-module</artifactId>
             <version>2.1.1</version>
             <classifier>mule-plugin</classifier>
+        </dependency>
+    	<dependency>
+            <groupId>com.mulesoft.munit</groupId>
+            <artifactId>munit-runner</artifactId>
+            <version>2.3.2</version>
+            <classifier>mule-plugin</classifier>
+            <scope>test</scope>
+        </dependency>	<dependency>
+            <groupId>com.mulesoft.munit</groupId>
+            <artifactId>munit-tools</artifactId>
+            <version>2.3.2</version>
+            <classifier>mule-plugin</classifier>
+            <scope>test</scope>
+        </dependency>
+    	<dependency>
+            <groupId>9ac3c8fa-838f-4e07-b1cd-59e1971c7a08</groupId>
+            <artifactId>load-global-covid-datafile-api</artifactId>
+            <version>1.0.0</version>
+            <classifier>raml</classifier>
+            <type>zip</type>
         </dependency>
     </dependencies>
 

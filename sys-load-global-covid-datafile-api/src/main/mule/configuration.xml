@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+	    <http:listener-config name="load-global-covid-datafile-api-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8081" connectionIdleTimeout="300000">
+			<reconnection >
+				<reconnect count="3" />
+			</reconnection>
+		</http:listener-connection>
+    </http:listener-config>
+    <apikit:config name="load-global-covid-datafile-api-config" api="resource::9ac3c8fa-838f-4e07-b1cd-59e1971c7a08:load-global-covid-datafile-api:1.0.0:raml:zip:load-global-covid-datafile-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <http:request-config name="HTTP_Request_ECDC_configuration" doc:name="HTTP Request configuration" doc:id="a66dd417-d8ab-4d33-a647-d255b9c7a4b2" >
+		<http:request-connection protocol="HTTPS" host="${ecdc.host}" port="${ecdc.port}" >
+			<reconnection >
+				<reconnect count="3" />
+			</reconnection>
+		</http:request-connection>
+	</http:request-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="9aff9217-f83d-4025-9a28-78229ed1e284" file="dev.yaml" />
+	<configuration doc:name="Configuration" doc:id="8d96353b-4584-42da-9ce1-5b0946ca5ce9" defaultErrorHandler-ref="Error_Handler" />
+	<api-gateway:autodiscovery apiId="${api.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="ac0dcf57-0397-4f45-b30e-d526179ff0da" flowRef="load-global-covid-datafile-api-main" />
+	
+	
+</mule>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+	    <http:listener-config name="load-US-covid-datafile-api-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8082" />
+    </http:listener-config>
+    <apikit:config name="load-US-covid-datafile-api-config" api="resource::9ac3c8fa-838f-4e07-b1cd-59e1971c7a08:load-us-covid-datafile-api:1.0.0:raml:zip:load-US-covid-datafile-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <http:request-config name="HTTP_Request_NYT_configuration" doc:name="HTTP Request configuration" doc:id="ac243704-9137-49e9-b30b-49321cc71033" responseTimeout="300000">
+		<http:request-connection protocol="HTTPS" host="${nyt.host}" port="${nyt.port}" />
+	</http:request-config>
+	<configuration doc:name="Configuration" doc:id="40740816-05c6-494a-bd12-6c432c1bb879" defaultErrorHandler-ref="Error_Handler" />
+	<configuration-properties doc:name="Configuration properties" doc:id="1c2be503-da2c-468f-9eb7-7926ed6f9815" file="${env}.yaml" />
+	<api-gateway:autodiscovery apiId="${api.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="4e3eb4a6-1dd2-447b-a63c-f50a91c774ab" flowRef="load-US-covid-datafile-api-main" />
+	
+	
+	
+</mule>

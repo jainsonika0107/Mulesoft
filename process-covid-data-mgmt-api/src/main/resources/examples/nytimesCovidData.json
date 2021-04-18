@@ -1,0 +1,35 @@
+[
+  {
+    "zipCode": "75035",
+    "state": "TX",
+    "county": "Collin",
+    "metrics": 
+      {
+        "date": "2021-04-01",
+        "cases": 1,
+        "deaths": 0
+      }
+  },
+  {
+    "zipCode": "75035",
+    "state": "TX",
+    "county": "Collin",
+    "metrics": 
+      {
+        "date": "2021-04-02",
+        "cases": 2,
+        "deaths": 0
+      }
+  },
+  {
+    "zipCode": "75035",
+    "state": "TX",
+    "county": "Collin",
+    "metrics": 
+      {
+        "date": "2021-04-03",
+        "cases": 5,
+        "deaths": 1
+      }
+  }
+]

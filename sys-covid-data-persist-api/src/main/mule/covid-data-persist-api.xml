@@ -1,15 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
-http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
-http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
-    <http:listener-config name="covid-data-persist-api-httpListenerConfig">
-        <http:listener-connection host="0.0.0.0" port="8083" />
-    </http:listener-config>
-    <apikit:config name="covid-data-persist-api-config" api="resource::9ac3c8fa-838f-4e07-b1cd-59e1971c7a08:covid-data-tracking-api:1.0.1:raml:zip:covid-data-persist-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
-    <file:config name="File_Config" doc:name="File Config" doc:id="72556dc5-08c8-4541-aaf5-ead09f81c174" >
-		<file:connection workingDir="C:\temp" />
-	</file:config>
-	<flow name="covid-data-persist-api-main">
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd  http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+    <flow name="covid-data-persist-api-main">
         <http:listener config-ref="covid-data-persist-api-httpListenerConfig" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
                 <http:headers>#[vars.outboundHeaders default {}]</http:headers>
@@ -19,123 +10,93 @@ http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/fil
                 <http:headers>#[vars.outboundHeaders default {}]</http:headers>
             </http:error-response>
         </http:listener>
-        <apikit:router config-ref="covid-data-persist-api-config" />
-        <error-handler>
-            <on-error-propagate type="APIKIT:BAD_REQUEST">
-                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Bad request"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-            <on-error-propagate type="APIKIT:NOT_FOUND">
-                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Resource not found"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
-                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Method not allowed"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
-                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Not acceptable"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
-                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Unsupported media type"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
-                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Not Implemented"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-        </error-handler>
-    </flow>
-    <flow name="covid-data-persist-api-console">
-        <http:listener config-ref="covid-data-persist-api-httpListenerConfig" path="/console/*">
-            <http:response statusCode="#[vars.httpStatus default 200]">
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
-            </http:response>
-            <http:error-response statusCode="#[vars.httpStatus default 500]">
-                <http:body>#[payload]</http:body>
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
-            </http:error-response>
-        </http:listener>
-        <apikit:console config-ref="covid-data-persist-api-config" />
-        <error-handler>
-            <on-error-propagate type="APIKIT:NOT_FOUND">
-                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{message: "Resource not found"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-        </error-handler>
+        <apikit:router config-ref="covid-data-persist-api-config" doc:id="0c330785-0194-4b0c-b608-4d61dc4120f4"/>
+        <error-handler ref="Error_Handler" />
     </flow>
     <flow name="post:\covid19\data\ecdc:application\json:covid-data-persist-api-config">
-        <logger level="INFO" doc:name="Logger" doc:id="c9ad48b5-7a3a-49c1-a412-11ad081bee22" message="Executing post:\covid19\data\ecdc:application\json:covid-data-persist-api-config Flow"/>
-		<file:write doc:name="Write" doc:id="fbcabbc9-5376-404a-a623-4d1924ee2a75" config-ref="File_Config" path="ecdc.json" mode="APPEND"/>
-		<logger level="INFO" doc:name="Logger" doc:id="4f147aa0-9125-472a-a539-121c0e78bfe3" message="Executed post:\covid19\data\ecdc:application\json:covid-data-persist-api-config Flow"/>
+        <logger level="INFO" doc:name="Logger" doc:id="c9ad48b5-7a3a-49c1-a412-11ad081bee22" message="Executing post:\covid19\data\ecdc:application\json:covid-data-persist-api-config Flow" />
+        <db:bulk-insert doc:name="Bulk Insert ECDC" doc:id="a4b544dc-4c82-4ea9-bd32-d14286ef2eda" config-ref="Database_Config">
+            <db:bulk-input-parameters><![CDATA[#[%dw 2.0
+output application/json
+---
+payload map {
+    "date": $.metrics.date,
+    "cases": $.metrics.cases,
+    "deaths": $.metrics.deaths,
+    "cumulativeFor14DaysPer100000": $.cumulativeFor14DaysPer100000,
+    "countriesAndTerritories": $.countriesAndTerritories,
+    "geoID": $.geoID,
+    "countryTerritoryCode": $.countryTerritoryCode,
+    "popData2019": $.populationData2019,
+    "continentExp": $.continentExp
+}]]]></db:bulk-input-parameters>
+            <db:sql><![CDATA[INSERT INTO globalcoviddata (dateRep,cases,deaths,countriesAndTerritories,geoId,countryterritoryCode,popData2019,continentExp,cumulative_number_for_14_days_of_COVID) VALUES(:date,:cases,:deaths,:countriesAndTerritories,:geoID,:countryTerritoryCode,:popData2019,:continentExp,:cumulativeFor14DaysPer100000)]]></db:sql>
+        </db:bulk-insert>
+        <ee:transform doc:name="Transform Message" doc:id="f756bb03-4612-4b72-927f-7e05e3135b79">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message":"COVID-19 records from ECDC have been successfully created."
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+        <logger level="INFO" doc:name="Logger" doc:id="4f147aa0-9125-472a-a539-121c0e78bfe3" message="Executed post:\covid19\data\ecdc:application\json:covid-data-persist-api-config Flow" />
+        <error-handler ref="Error_Handler" />
     </flow>
     <flow name="post:\covid19\data\nytimes:application\json:covid-data-persist-api-config">
-        <logger level="INFO" doc:name="Logger" doc:id="b578977a-04e0-4db7-806c-7b18d537db52" message="Executing post:\covid19\data\nytimes:application\json:covid-data-persist-api-config Flow"/>
-		<file:write doc:name="Write" doc:id="bfa4f851-775f-4fa4-a52a-77f9b191d41e" config-ref="File_Config" path="us.json" mode="APPEND"/>
-		<logger level="INFO" doc:name="Logger" doc:id="dd882fb3-b31b-4491-ac85-9c77825da412" message="Executed post:\covid19\data\nytimes:application\json:covid-data-persist-api-config Flow"/>
+        <logger level="INFO" doc:name="Logger" doc:id="b578977a-04e0-4db7-806c-7b18d537db52" message="Executing post:\covid19\data\nytimes:application\json:covid-data-persist-api-config Flow" />
+        <db:bulk-insert doc:name="Bulk Insert NYTimes" doc:id="d7fd82aa-a666-4b6f-9203-9e3da044eee2" config-ref="Database_Config">
+            <db:bulk-input-parameters><![CDATA[#[%dw 2.0
+output application/json
+---
+payload map {
+    "date": $.metrics.date,
+    "cases": $.metrics.cases,
+    "deaths": $.metrics.deaths,
+    "county": $.county,
+    "state": $.state,
+    "zipCode": $.zipCode
+}]]]></db:bulk-input-parameters>
+            <db:sql><![CDATA[INSERT INTO uscoviddata(date,county,state,fips,cases,deaths) VALUES(:date,:county,:state,:zipCode,:cases,:deaths)]]></db:sql>
+        </db:bulk-insert>
+        <ee:transform doc:name="Transform Message" doc:id="7e901c4f-29be-4d65-9625-72ab4cb8a092">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message":"COVID-19 records from NY Times have been successfully created."
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+        <logger level="INFO" doc:name="Logger" doc:id="dd882fb3-b31b-4491-ac85-9c77825da412" message="Executed post:\covid19\data\nytimes:application\json:covid-data-persist-api-config Flow" />
+        <error-handler ref="Error_Handler" />
+    </flow>
+	<flow name="post:\covid19\data\stats:application\json:covid-data-persist-api-config">
+        <logger level="INFO" doc:name="Logger" doc:id="a2069cd6-440d-4e27-a8e9-34d6f1bf93d5" message="Executing post:\covid19\data\stats:application\json:covid-data-persist-api-config Flow" />
+		<db:insert doc:name="Insert" doc:id="01ce4e6d-555c-4758-819f-48f7e9980218" config-ref="Database_Config">
+			<db:sql><![CDATA[INSERT INTO JOBLOGS (jobDate, processTime, totalRecords, failedRecords, jobName) values (:jobDate,:processTime,:totalRecords,:failedRecords,:jobName)]]></db:sql>
+			<db:input-parameters><![CDATA[#[{
+	"jobDate": payload.jobDate,
+	"processTime": payload.processTime,
+	"totalRecords": payload.totalRecords,
+	"failedRecords": payload.failedRecords,
+	"jobName": payload.jobName
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="a1b56795-b56b-4ef5-a767-31fe5b6ce2b3">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  message: "COVID-19 Batch statistics have been successfully created."
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="6b522d7c-7d2b-4eb3-8f55-816b1e5c2c40" message="Executed post:\covid19\data\stats:application\json:covid-data-persist-api-config Flow" />
+		<error-handler ref="Error_Handler" />
     </flow>
 </mule>

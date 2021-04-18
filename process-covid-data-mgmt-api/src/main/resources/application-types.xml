@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="nytimesCovidData" format="json">
+      <types:shape format="weave" example="examples/nytimesCovidData.json"><![CDATA[%dw 2.0
+
+type nytimesCovidData = Array<{|  zipCode: String,   state: String,   county: String,   metrics: {|    date: String,     cases: Number {"typeId": "int"},     deaths: Number {"typeId": "int"}  |}|}> {"example": "[{\\\"zipCode\\\":\\\"75035\\\",\\\"state\\\":\\\"TX\\\",\\\"county\\\":\\\"Collin\\\",\\\"metrics\\\":{\\\"date\\\":\\\"2021-04-01\\\",\\\"cases\\\":1,\\\"deaths\\\":0}},{\\\"zipCode\\\":\\\"75035\\\",\\\"state\\\":\\\"TX\\\",\\\"county\\\":\\\"Collin\\\",\\\"metrics\\\":{\\\"date\\\":\\\"2021-04-02\\\",\\\"cases\\\":2,\\\"deaths\\\":0}},{\\\"zipCode\\\":\\\"75035\\\",\\\"state\\\":\\\"TX\\\",\\\"county\\\":\\\"Collin\\\",\\\"metrics\\\":{\\\"date\\\":\\\"2021-04-03\\\",\\\"cases\\\":5,\\\"deaths\\\":1}}]"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#a888d777-72be-4364-9c9f-6173ac9db714">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="nytimesCovidData"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

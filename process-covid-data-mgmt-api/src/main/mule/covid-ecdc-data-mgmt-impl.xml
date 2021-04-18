@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:compression="http://www.mulesoft.org/schema/mule/compression" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/compression http://www.mulesoft.org/schema/mule/compression/current/mule-compression.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<flow name="covid-ecdc-data-mgmt-implFlow" doc:id="0e202c13-a615-4ee8-b6d4-6c51090a6ea0" >
+		<http:request method="GET" doc:name="Request File" doc:id="73713f05-6bbb-451a-bb4b-38aac08b42a2" config-ref="HTTP_Request_ECDC_SYS_Configuration" path="/${ecdc-sys-api.path}" responseTimeout="300000">
+			<http:body ><![CDATA[payload]]></http:body>
+		</http:request>
+		<compression:decompress doc:name="Decompress" doc:id="39bdf038-9e8c-4015-b9d9-a1076bdca882" outputMimeType="application/csv">
+			<compression:decompressor >
+				<compression:zip-decompressor />
+			</compression:decompressor>
+		</compression:decompress>
+		<ee:transform doc:name="Transform to JAVA" doc:id="037c6f43-2fc6-4d9d-8cdd-84c088f5d702" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<batch:job jobName="covid-ecdc-data-mgmt-implBatch_Job" doc:id="137f9cf7-631c-4528-831a-327079841c49" blockSize="500">
+			<batch:process-records >
+				<batch:step name="Process_All_Records" doc:id="09f5c5c7-0eb3-48ff-b507-e1cc414755f7" acceptPolicy="ALL">
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="8496b235-8e4f-4ad0-8bc0-4ec6990ab34f" size="1000">
+						<ee:transform doc:name="Transform Message to DB System API" doc:id="1e5d327b-ff62-4d00-bd01-2e111f7d82ad" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map {
+    "countriesAndTerritories": $.countriesAndTerritories default "",
+    "geoID": $.geoId default "",
+    "countryTerritoryCode": $.countryterritoryCode default "",
+    "populationData2019": $.popData2019 as Number default 0,
+    "continentExp": $.continentExp default "",
+    "metrics": {
+        "date": $.dateRep as Date {format: "dd/MM/yyyy"} as String {format: "yyyy-MM-dd"} default "",
+        "cases": $.cases as Number default 0,
+        "deaths": $.deaths as Number default 0,
+        "cumulativeFor14DaysPer100000": 
+        	$."Cumulative_number_for_14_days_of_COVID-19_cases_per_100000" as Number default 0
+    }
+} ]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+						<http:request method="POST" doc:name="Request DB System API" doc:id="4eeee1ac-3069-4162-a5ed-e3d4e376ad9b" path="/${persist-sys-api.ecdc-path}" config-ref="HTTP_Request_DB_SYS_Configuration" responseTimeout="1800000"/>
+					</batch:aggregator>
+				</batch:step>
+				<batch:step name="Process_Failed_Records" doc:id="2724ebf2-09fe-412c-95f6-b31a67ba06f9" acceptPolicy="ONLY_FAILURES">
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="4817274d-be75-472a-b1b2-f72df5f3fa39" size="500">
+						<vm:publish queueName="failedRecords" doc:name="Publish Failed Records" doc:id="ed2e7e1a-a53b-4344-a180-a1a29ba8a92d" config-ref="VM_Config" sendCorrelationId="ALWAYS"/>
+					</batch:aggregator>
+				</batch:step>
+			</batch:process-records>
+			<batch:on-complete >
+				<http:request method="POST" doc:name="Persist Batch Results" doc:id="9914958b-520a-4f23-b1bf-d80957fb1a5e" config-ref="HTTP_Request_DB_SYS_Configuration" path="/${persist-sys-api.stats-path}">
+					<http:body ><![CDATA[#[output application/json
+---
+{
+  "jobDate": now() as Date as String,
+  "processTime" : (payload.elapsedTimeInMillis/1000) as DateTime as String {format: "HH:mm:ss"},
+  "totalRecords" : payload.totalRecords,
+  "failedRecords" : (payload.totalRecords as Number) - (payload.successfulRecords as Number),
+  "jobName" :  "ECDC Batch Job"
+}]]]></http:body>
+				</http:request>
+				<logger level="INFO" doc:name="Logger" doc:id="8546ff2f-6cf5-472a-a434-9ba276357394" message="Completed Processing of ECDC COVID19 Batch Persistence "/>
+			</batch:on-complete>
+		</batch:job>
+		<error-handler ref="Error_Handler" />
+	</flow>
+</mule>

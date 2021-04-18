@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:compression="http://www.mulesoft.org/schema/mule/compression" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/compression http://www.mulesoft.org/schema/mule/compression/current/mule-compression.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	<flow name="covid-nyt-data-mgmt-implFlow" doc:id="073fc208-d49f-421b-a9f8-65da9265f6e7" >
+		<http:request method="GET" doc:name="Request File" doc:id="ef7413d4-0c3a-4552-9752-3104510fe58f" path="/${nyt-sys-api.path}" responseTimeout="300000" config-ref="HTTP_Request_NYT_SYS_Configuration"/>
+		<compression:decompress doc:name="Decompress" doc:id="2346eaf2-3ac9-431b-b542-a4c9c483b14d" outputMimeType="application/csv">
+			<compression:decompressor >
+				<compression:zip-decompressor />
+			</compression:decompressor>
+		</compression:decompress>
+		<ee:transform doc:name="Transform Message to JAVA" doc:id="24e47d3c-ecf5-4f30-8473-5fff8db91d0c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<batch:job jobName="covid-nyt-data-mgmt-implBatch_Job" doc:id="6a8d9df6-f279-40da-bd94-eb84431e6efc" blockSize="500">
+			<batch:process-records >
+				<batch:step name="Process_All_Records" doc:id="545f328a-7955-4a0b-8718-58f648261a19" acceptPolicy="ALL">
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="3d3bab53-8ba2-44bc-86da-e7350bb0bccd" size="1000">
+						<ee:transform doc:name="Transform Message to DB System API" doc:id="68def2be-716e-4c69-9437-7d75a126c108" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+
+payload map {
+    "zipCode": $.fips default "",
+    "state": $.state default "",
+    "county": $.county default "",
+    "metrics":{
+        "date": $.date as String {format: 'yyyy-MM-dd'} default "",
+	    "cases": $.cases as Number default 0,
+	    "deaths": $.deaths as Number default 0
+    }
+}]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+						<http:request method="POST" doc:name="Request DB System API" doc:id="5e7f6fdf-48f2-405e-a5a1-89d3a7f07231" path="/${persist-sys-api.nyt-path}" responseTimeout="1800000" config-ref="HTTP_Request_DB_SYS_Configuration"/>
+					</batch:aggregator>
+				</batch:step>
+				<batch:step name="Process_Failed_Records" doc:id="e6439df3-ae25-41ed-9193-63b8ffa4f0ca" acceptPolicy="ONLY_FAILURES">
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="18befcf5-fd7e-48b7-ba39-c110dd4281ca" size="1000">
+						<vm:publish doc:name="Publish Failed Records" doc:id="a186f918-2ab6-495b-a56e-2b84ee0c6369" config-ref="VM_Config" sendCorrelationId="ALWAYS" queueName="failedRecords"/>
+					</batch:aggregator>
+				</batch:step>
+			</batch:process-records>
+			<batch:on-complete >
+				<http:request method="POST" doc:name="Persist Batch Results" doc:id="1c05ae7d-7b95-46c5-b953-edc33f3800d8" config-ref="HTTP_Request_DB_SYS_Configuration" path="/${persist-sys-api.stats-path}">
+					<http:body ><![CDATA[#[%dw 2.0
+output application/json
+---
+{
+  "jobDate": now() as Date as String,
+  "processTime" : (payload.elapsedTimeInMillis).seconds as DateTime as String {format: "HH:mm:ss"},
+  "totalRecords" : payload.totalRecords,
+  "failedRecords" : (payload.totalRecords as Number) - (payload.successfulRecords as Number),
+  "jobName" :  "NY Times Batch Job"
+}]]]></http:body>
+				</http:request>
+				<logger level="INFO" doc:name="Logger" doc:id="2aa2a10a-d00d-409f-963a-5759d2ba7bbb" message="Completed Processing of NY Times COVID19 Batch Persistence "/>
+			</batch:on-complete>
+		</batch:job>
+		<error-handler ref="Error_Handler" />
+	</flow>
+</mule>
