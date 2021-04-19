@@ -67,12 +67,6 @@ spy_assert_payload1::main({payload: payload, attributes: attributes, vars: vars}
 			<flow-ref doc:name="Flow-ref to post:\covid19\data\management\(source):application\json:covid-data-mgmt-process-api-config" doc:id="4fb1031a-18d9-4ce0-b4f4-df6ce14911ac" name="post:\covid19\data\management\(source):application\json:covid-data-mgmt-process-api-config"/>
 		</munit:execution>
 		<munit:validation >
-			<munit-tools:assert doc:name="Assert payload" doc:id="1bab7673-98a0-4551-b523-0320156c066e" message="The payload does not match">
-				<munit-tools:that ><![CDATA[#[%dw 2.0
-import postcovid19datamanagementsourceapplicationjsoncoviddatamgmtprocessapiconfigtest::assert_expression_payload
----
-assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
-			</munit-tools:assert>
 			<munit-tools:verify-call doc:name="Verify Logger" doc:id="06b7c273-6565-4041-bfbc-521018762c4c" processor="logger" times="1">
 				<munit-tools:with-attributes >
 					<munit-tools:with-attribute whereValue="e1f2d356-27fe-4258-89fb-cec282953806" attributeName="doc:id" />

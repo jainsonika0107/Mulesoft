@@ -50,8 +50,9 @@ http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/sc
 		</http:default-headers>
     </http:request-config>
     <configuration doc:name="Configuration" doc:id="5f50a361-021d-4297-a7c5-2aa6cd7fb1e1" defaultErrorHandler-ref="Error_Handler" />
-    <configuration-properties doc:name="Configuration properties" doc:id="6db74589-9b93-49a0-8d7c-4782d2c39a4f" file="dev.yaml" />
-	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="39fd008c-2911-4111-a166-cd2a97525ada" file="dev.yaml" key="Mulesoft" >
+    <configuration-properties doc:name="Configuration properties" doc:id="6db74589-9b93-49a0-8d7c-4782d2c39a4f" file="${env}.yaml" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="39fd008c-2911-4111-a166-cd2a97525ada" file="${env}.yaml" key="Mulesoft" >
 		<secure-properties:encrypt algorithm="Blowfish" mode="ECB" />
 	</secure-properties:config>
+	<api-gateway:autodiscovery apiId="${api.id}" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="1ccd85a8-5070-4999-80bb-21dd38e155cd" flowRef="covid-data-mgmt-process-api-main" />
 </mule>
