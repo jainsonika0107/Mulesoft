@@ -30,7 +30,7 @@ payload]]></ee:set-payload>
 		<batch:job jobName="covid-ecdc-data-mgmt-implBatch_Job" doc:id="137f9cf7-631c-4528-831a-327079841c49" blockSize="500">
 			<batch:process-records >
 				<batch:step name="Process_All_Records" doc:id="09f5c5c7-0eb3-48ff-b507-e1cc414755f7" acceptPolicy="ALL">
-					<batch:aggregator doc:name="Batch Aggregator" doc:id="8496b235-8e4f-4ad0-8bc0-4ec6990ab34f" size="1000">
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="8496b235-8e4f-4ad0-8bc0-4ec6990ab34f" size="500">
 						<ee:transform doc:name="Transform Message to DB System API" doc:id="1e5d327b-ff62-4d00-bd01-2e111f7d82ad" >
 							<ee:message >
 								<ee:set-payload ><![CDATA[%dw 2.0

@@ -28,7 +28,7 @@ payload]]></ee:set-payload>
 		<batch:job jobName="covid-nyt-data-mgmt-implBatch_Job" doc:id="6a8d9df6-f279-40da-bd94-eb84431e6efc" blockSize="500">
 			<batch:process-records >
 				<batch:step name="Process_All_Records" doc:id="545f328a-7955-4a0b-8718-58f648261a19" acceptPolicy="ALL">
-					<batch:aggregator doc:name="Batch Aggregator" doc:id="3d3bab53-8ba2-44bc-86da-e7350bb0bccd" size="1000">
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="3d3bab53-8ba2-44bc-86da-e7350bb0bccd" size="500">
 						<ee:transform doc:name="Transform Message to DB System API" doc:id="68def2be-716e-4c69-9437-7d75a126c108" >
 							<ee:message >
 								<ee:set-payload ><![CDATA[%dw 2.0
@@ -51,7 +51,7 @@ payload map {
 					</batch:aggregator>
 				</batch:step>
 				<batch:step name="Process_Failed_Records" doc:id="e6439df3-ae25-41ed-9193-63b8ffa4f0ca" acceptPolicy="ONLY_FAILURES">
-					<batch:aggregator doc:name="Batch Aggregator" doc:id="18befcf5-fd7e-48b7-ba39-c110dd4281ca" size="1000">
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="18befcf5-fd7e-48b7-ba39-c110dd4281ca" size="500">
 						<vm:publish doc:name="Publish Failed Records" doc:id="a186f918-2ab6-495b-a56e-2b84ee0c6369" config-ref="VM_Config" sendCorrelationId="ALWAYS" queueName="failedRecords"/>
 					</batch:aggregator>
 				</batch:step>
@@ -63,7 +63,7 @@ output application/json
 ---
 {
   "jobDate": now() as Date as String,
-  "processTime" : (payload.elapsedTimeInMillis).seconds as DateTime as String {format: "HH:mm:ss"},
+  "processTime" : (payload.elapsedTimeInMillis/1000) as DateTime as String {format: "HH:mm:ss"},
   "totalRecords" : payload.totalRecords,
   "failedRecords" : (payload.totalRecords as Number) - (payload.successfulRecords as Number),
   "jobName" :  "NY Times Batch Job"

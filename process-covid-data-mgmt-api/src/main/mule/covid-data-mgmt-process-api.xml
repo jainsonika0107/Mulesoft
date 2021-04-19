@@ -10,7 +10,7 @@
                 <http:headers>#[vars.outboundHeaders default {}]</http:headers>
             </http:error-response>
         </http:listener>
-        <apikit:router config-ref="covid-data-mgmt-process-api-config" />
+        <apikit:router config-ref="covid-data-mgmt-process-api-config" doc:id="e6e11087-340f-4c1b-b2b5-6873c2fe9b09"/>
         <error-handler ref="Error_Handler" />
     </flow>
     <flow name="post:\covid19\data\management\(source):application\json:covid-data-mgmt-process-api-config">
